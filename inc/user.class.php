@@ -1785,7 +1785,8 @@ class User extends CommonDBTM {
       //Get the result of the search as an array
       $info = AuthLDAP::get_entries_clean($ds, $sr);
       //Browse all the groups
-      for ($i = 0; $i < count($info); $i++) {
+      $info_count = count($info);
+      for ($i = 0; $i < $info_count; $i++) {
          //Get the cn of the group and add it to the list of groups
          if (isset($info[$i]["dn"]) && ($info[$i]["dn"] != '')) {
             $listgroups[$i] = $info[$i]["dn"];
@@ -2240,7 +2241,7 @@ JAVASCRIPT;
 
       $phonerand = mt_rand();
       echo "<tr class='tab_bg_1'>";
-      echo "<td><label for='textfield_phone$phonerand'>" .  __('Phone') . "</label></td><td>";
+      echo "<td><label for='textfield_phone$phonerand'>" .  Phone::getTypeName(1) . "</label></td><td>";
       Html::autocompletionTextField($this, "phone", ['rand' => $phonerand]);
       echo "</td>";
       //Authentications information : auth method used and server used
@@ -2305,7 +2306,7 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_1'>";
       if (!empty($ID)) {
          $locrand = mt_rand();
-         echo "<td><label for='dropdown_locations_id$locrand'>" . __('Location') . "</label></td><td>";
+         echo "<td><label for='dropdown_locations_id$locrand'>" . Location::getTypeName(1) . "</label></td><td>";
          $entities = $this->getEntities();
          if (count($entities) <= 0) {
             $entities = -1;
@@ -2326,13 +2327,13 @@ JAVASCRIPT;
          echo "</td></tr>";
          $profilerand = mt_rand();
          echo "<tr class='tab_bg_1'>";
-         echo "<td><label for='dropdown__profiles_id$profilerand'>" .  __('Profile') . "</label></td><td>";
+         echo "<td><label for='dropdown__profiles_id$profilerand'>" .  Profile::getTypeName(1) . "</label></td><td>";
          Profile::dropdownUnder(['name'  => '_profiles_id',
                                  'rand'  => $profilerand,
                                  'value' => Profile::getDefault()]);
 
          $entrand = mt_rand();
-         echo "</td><td><label for='dropdown__entities_id$entrand'>" .  __('Entity') . "</label></td><td>";
+         echo "</td><td><label for='dropdown__entities_id$entrand'>" .  Entity::getTypeName(1) . "</label></td><td>";
          Entity::dropdown(['name'                => '_entities_id',
                            'display_emptychoice' => false,
                            'rand'                => $entrand,
@@ -2470,7 +2471,7 @@ JAVASCRIPT;
       echo getUserName($userid);
       echo "</td>";
       echo "<td class='b'  width='20%'>";
-      echo __('Phone');
+      echo Phone::getTypeName(1);
       echo "</td><td width='30%'>";
       echo $user->getField('phone');
       echo "</td>";
@@ -2491,14 +2492,14 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='b'>";
-      echo __('Email');
+      echo _n('Email', 'Emails', 1);
       echo "</td><td>";
       echo $user->getDefaultEmail();
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='b'>";
-      echo __('Location');
+      echo Location::getTypeName(1);
       echo "</td><td>";
       echo Dropdown::getDropdownName('glpi_locations', $user->getField('locations_id'));
       echo "</td>";
@@ -2695,7 +2696,7 @@ JAVASCRIPT;
          }
 
          $phonerand = mt_rand();
-         echo "<tr class='tab_bg_1'><td><label for='textfield_phone$phonerand'>" .  __('Phone') . "</label></td><td>";
+         echo "<tr class='tab_bg_1'><td><label for='textfield_phone$phonerand'>" .  Phone::getTypeName(1) . "</label></td><td>";
 
          if ($extauth
              && isset($authtype['phone_field']) && !empty($authtype['phone_field'])) {
@@ -2774,7 +2775,7 @@ JAVASCRIPT;
          echo "</td><td colspan='2'></td></tr>";
 
          $locrand = mt_rand();
-         echo "<tr class='tab_bg_1'><td><label for='dropdown_locations_id$locrand'>" . __('Location') . "</label></td><td>";
+         echo "<tr class='tab_bg_1'><td><label for='dropdown_locations_id$locrand'>" . Location::getTypeName(1) . "</label></td><td>";
          Location::dropdown(['value'  => $this->fields['locations_id'],
                              'rand'   => $locrand,
                              'entity' => $entities]);
@@ -3124,7 +3125,7 @@ JAVASCRIPT;
          'id'                 => '6',
          'table'              => $this->getTable(),
          'field'              => 'phone',
-         'name'               => __('Phone'),
+         'name'               => Phone::getTypeName(1),
          'datatype'           => 'string',
          'autocomplete'       => true,
       ];
@@ -3151,7 +3152,7 @@ JAVASCRIPT;
          'id'                 => '13',
          'table'              => 'glpi_groups',
          'field'              => 'completename',
-         'name'               => _n('Group', 'Groups', Session::getPluralNumber()),
+         'name'               => Group::getTypeName(Session::getPluralNumber()),
          'forcegroupby'       => true,
          'datatype'           => 'itemlink',
          'massiveaction'      => false,
@@ -3253,8 +3254,8 @@ JAVASCRIPT;
          'id'                 => '20',
          'table'              => 'glpi_profiles',
          'field'              => 'name',
-         'name'               => sprintf(__('%1$s (%2$s)'), _n('Profile', 'Profiles', Session::getPluralNumber()),
-                                                 _n('Entity', 'Entities', 1)),
+         'name'               => sprintf(__('%1$s (%2$s)'), Profile::getTypeName(Session::getPluralNumber()),
+                                                 Entity::getTypeName(1)),
          'forcegroupby'       => true,
          'massiveaction'      => false,
          'datatype'           => 'dropdown',
@@ -3309,8 +3310,8 @@ JAVASCRIPT;
          'table'              => 'glpi_entities',
          'linkfield'          => 'entities_id',
          'field'              => 'completename',
-         'name'               => sprintf(__('%1$s (%2$s)'), _n('Entity', 'Entities', Session::getPluralNumber()),
-                                                 _n('Profile', 'Profiles', 1)),
+         'name'               => sprintf(__('%1$s (%2$s)'), Entity::getTypeName(Session::getPluralNumber()),
+                                                 Profile::getTypeName(1)),
          'forcegroupby'       => true,
          'datatype'           => 'dropdown',
          'massiveaction'      => false,
@@ -3924,25 +3925,27 @@ JAVASCRIPT;
 
       // Default values
       $p = [
-         'name'             => 'users_id',
-         'value'            => '',
-         'values'           => [],
-         'right'            => 'id',
-         'all'              => 0,
-         'on_change'        => '',
-         'comments'         => 1,
-         'width'            => '80%',
-         'entity'           => -1,
-         'entity_sons'      => false,
-         'used'             => [],
-         'ldap_import'      => false,
-         'toupdate'         => '',
-         'rand'             => mt_rand(),
-         'display'          => true,
-         '_user_index'      => 0,
-         'specific_tags'    => [],
-         'url'              => $CFG_GLPI['root_doc']."/ajax/getDropdownUsers.php",
-         'inactive_deleted' => 0,
+         'name'                => 'users_id',
+         'value'               => '',
+         'values'              => [],
+         'right'               => 'id',
+         'all'                 => 0,
+         'display_emptychoice' => true,
+         'placeholder'         => '',
+         'on_change'           => '',
+         'comments'            => 1,
+         'width'               => '80%',
+         'entity'              => -1,
+         'entity_sons'         => false,
+         'used'                => [],
+         'ldap_import'         => false,
+         'toupdate'            => '',
+         'rand'                => mt_rand(),
+         'display'             => true,
+         '_user_index'         => 0,
+         'specific_tags'       => [],
+         'url'                 => $CFG_GLPI['root_doc'] . "/ajax/getDropdownUsers.php",
+         'inactive_deleted'    => 0,
       ];
 
       if (is_array($options) && count($options)) {
@@ -3994,19 +3997,21 @@ JAVASCRIPT;
          }
       }
 
-      $field_id = Html::cleanId("dropdown_".$p['name'].$p['rand']);
+      $field_id = Html::cleanId("dropdown_" . $p['name'] . $p['rand']);
       $param    = ['value'               => $p['value'],
-                        'values'              => $p['values'],
-                        'valuename'           => $default,
-                        'valuesnames'         => $valuesnames,
-                        'width'               => $p['width'],
-                        'all'                 => $p['all'],
-                        'right'               => $p['right'],
-                        'on_change'           => $p['on_change'],
-                        'used'                => $p['used'],
-                        'inactive_deleted'    => $p['inactive_deleted'],
-                        'entity_restrict'     => (is_array($p['entity']) ? json_encode(array_values($p['entity'])) : $p['entity']),
-                        'specific_tags'       => $p['specific_tags']];
+                   'values'              => $p['values'],
+                   'valuename'           => $default,
+                   'valuesnames'         => $valuesnames,
+                   'width'               => $p['width'],
+                   'all'                 => $p['all'],
+                   'display_emptychoice' => $p['display_emptychoice'],
+                   'placeholder'         => $p['placeholder'],
+                   'right'               => $p['right'],
+                   'on_change'           => $p['on_change'],
+                   'used'                => $p['used'],
+                   'inactive_deleted'    => $p['inactive_deleted'],
+                   'entity_restrict'     => (is_array($p['entity']) ? json_encode(array_values($p['entity'])) : $p['entity']),
+                   'specific_tags'       => $p['specific_tags']];
 
       $output   = Html::jsAjaxDropdown($p['name'], $field_id,
                                        $p['url'],
@@ -4269,8 +4274,8 @@ JAVASCRIPT;
       }
 
       echo "<div class='spaced'><table class='tab_cadre_fixehov'>";
-      $header = "<tr><th>".__('Type')."</th>";
-      $header .= "<th>".__('Entity')."</th>";
+      $header = "<tr><th>"._n('Type', 'Types', 1)."</th>";
+      $header .= "<th>".Entity::getTypeName(1)."</th>";
       $header .= "<th>".__('Name')."</th>";
       $header .= "<th>".__('Serial number')."</th>";
       $header .= "<th>".__('Inventory number')."</th>";
@@ -4349,8 +4354,8 @@ JAVASCRIPT;
       if (count($group_where)) {
          echo "<div class='spaced'><table class='tab_cadre_fixehov'>";
          $header = "<tr>".
-               "<th>".__('Type')."</th>".
-               "<th>".__('Entity')."</th>".
+               "<th>"._n('Type', 'Types', 1)."</th>".
+               "<th>".Entity::getTypeName(1)."</th>".
                "<th>".__('Name')."</th>".
                "<th>".__('Serial number')."</th>".
                "<th>".__('Inventory number')."</th>".
@@ -4393,7 +4398,7 @@ JAVASCRIPT;
                   }
                   $linktype = "";
                   if (isset($groups[$data[$field_group]])) {
-                     $linktype = sprintf(__('%1$s = %2$s'), _n('Group', 'Groups', 1),
+                     $linktype = sprintf(__('%1$s = %2$s'), Group::getTypeName(1),
                                           $groups[$data[$field_group]]);
                   }
                   echo "<tr class='tab_bg_1'><td class='center'>$type_name</td>";
@@ -4964,7 +4969,7 @@ JAVASCRIPT;
       }
       echo "<div class='spaced'>";
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr><th colspan='4'>".__('LDAP directory')."</th></tr>";
+      echo "<tr><th colspan='4'>".AuthLDAP::getTypeName(1)."</th></tr>";
 
       echo "<tr class='tab_bg_2'><td>".__('User DN')."</td>";
       echo "<td>".$this->fields['user_dn']."</td></tr>\n";
@@ -5012,7 +5017,7 @@ JAVASCRIPT;
    function getUnicityFieldsToDisplayInErrorMessage() {
 
       return ['id'          => __('ID'),
-                   'entities_id' => __('Entity')];
+                   'entities_id' => Entity::getTypeName(1)];
    }
 
 
@@ -5139,7 +5144,7 @@ JAVASCRIPT;
                     'name'       => array_keys($passwords)];
 
       foreach ($DB->request('glpi_users', $crit) as $data) {
-         if (Auth::checkPassword($passwords[$data['name']], $data['password'])) {
+         if (Auth::checkPassword($passwords[strtolower($data['name'])], $data['password'])) {
             $default_password_set[] = $data['name'];
          }
       }

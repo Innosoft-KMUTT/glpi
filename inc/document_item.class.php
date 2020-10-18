@@ -52,9 +52,6 @@ class Document_Item extends CommonDBRelation{
    static public $take_entity_2 = false;
 
 
-   /**
-    * @since 0.84
-   **/
    function getForbiddenStandardMassiveAction() {
 
       $forbidden   = parent::getForbiddenStandardMassiveAction();
@@ -63,10 +60,6 @@ class Document_Item extends CommonDBRelation{
    }
 
 
-   /**
-    * @since 0.85.5
-    * @see CommonDBRelation::canCreateItem()
-   **/
    function canCreateItem() {
 
       if ($this->fields['itemtype'] == 'Ticket') {
@@ -180,7 +173,7 @@ class Document_Item extends CommonDBRelation{
                                     ['items_id' => $this->fields['items_id'],
                                      'itemtype' => 'Ticket' ]) == 1) {
                $message = sprintf(__('Mandatory fields are not filled. Please correct: %s'),
-                                  _n('Document', 'Documents', 2));
+                                  Document::getTypeName(Session::getPluralNumber()));
                Session::addMessageAfterRedirect($message, false, ERROR);
                return false;
             }
@@ -373,9 +366,9 @@ class Document_Item extends CommonDBRelation{
          $header_bottom .= "</th>";
       }
 
-      $header_end .= "<th>".__('Type')."</th>";
+      $header_end .= "<th>"._n('Type', 'Types', 1)."</th>";
       $header_end .= "<th>".__('Name')."</th>";
-      $header_end .= "<th>".__('Entity')."</th>";
+      $header_end .= "<th>".Entity::getTypeName(1)."</th>";
       $header_end .= "<th>".__('Serial number')."</th>";
       $header_end .= "<th>".__('Inventory number')."</th>";
       $header_end .= "</tr>";
@@ -693,13 +686,13 @@ class Document_Item extends CommonDBRelation{
 
       $columns = [
          'name'      => __('Name'),
-         'entity'    => __('Entity'),
+         'entity'    => Entity::getTypeName(1),
          'filename'  => __('File'),
          'link'      => __('Web link'),
          'headings'  => __('Heading'),
          'mime'      => __('MIME type'),
          'tag'       => __('Tag'),
-         'assocdate' => __('Date')
+         'assocdate' => _n('Date', 'Dates', 1)
       ];
 
       if (isset($_GET["order"]) && ($_GET["order"] == "ASC")) {
@@ -901,11 +894,6 @@ class Document_Item extends CommonDBRelation{
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see CommonDBRelation::getRelationMassiveActionsPeerForSubForm()
-   **/
    static function getRelationMassiveActionsPeerForSubForm(MassiveAction $ma) {
 
       switch ($ma->getAction()) {
@@ -921,11 +909,6 @@ class Document_Item extends CommonDBRelation{
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see CommonDBRelation::getRelationMassiveActionsSpecificities()
-   **/
    static function getRelationMassiveActionsSpecificities() {
       $specificities              = parent::getRelationMassiveActionsSpecificities();
       $specificities['itemtypes'] = Document::getItemtypesThatCanHave();

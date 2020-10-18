@@ -53,9 +53,6 @@ class DisplayPreference extends CommonDBTM {
 
 
 
-   /**
-    * @see CommonDBTM::prepareInputForAdd()
-   **/
    function prepareInputForAdd($input) {
       global $DB;
 
@@ -72,11 +69,6 @@ class DisplayPreference extends CommonDBTM {
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see CommonDBTM::processMassiveActionsForOneItemtype()
-   **/
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids) {
 
@@ -270,7 +262,7 @@ class DisplayPreference extends CommonDBTM {
     * @param string $target    form target
     * @param string $itemtype  item type
     *
-    * @return void
+    * @return void|boolean (display) Returns false if there is a rights error.
    **/
    function showFormPerso($target, $itemtype) {
       global $CFG_GLPI, $DB;
@@ -442,7 +434,7 @@ class DisplayPreference extends CommonDBTM {
     * @param string $target    form target
     * @param string $itemtype  item type
     *
-    * @return void
+    * @return void|boolean (display) Returns false if there is a rights error.
    **/
    function showFormGlobal($target, $itemtype) {
       global $CFG_GLPI, $DB;
@@ -637,7 +629,7 @@ class DisplayPreference extends CommonDBTM {
          echo "<th width='10'>";
          echo Html::getCheckAllAsCheckbox('mass'.__CLASS__.$rand);
          echo "</th>";
-         echo "<th colspan='2'>".__('Type')."</th></tr>";
+         echo "<th colspan='2'>"._n('Type', 'Types', 1)."</th></tr>";
          while ($data = $iterator->next()) {
             echo "<tr class='tab_bg_1'><td width='10'>";
             Html::showMassiveActionCheckBox(__CLASS__, $data["itemtype"]);
@@ -727,11 +719,6 @@ class DisplayPreference extends CommonDBTM {
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see commonDBTM::getRights()
-   **/
    function getRights($interface = 'central') {
 
       //TRANS: short for : Search result user display

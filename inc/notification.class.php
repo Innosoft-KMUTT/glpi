@@ -129,6 +129,8 @@ class Notification extends CommonDBTM {
    const TEAM_SUPPLIER                       = 36;
    //Notification to the task assigned group
    const TASK_ASSIGN_GROUP                   = 37;
+   //Notification to planning event's guests
+   const PLANNING_EVENT_GUESTS               = 38;
 
    // From CommonDBTM
    public $dohistory = true;
@@ -215,7 +217,7 @@ class Notification extends CommonDBTM {
       Dropdown::showYesNo('allow_response', $this->allowResponse());
       echo "</td></tr>";
 
-      echo "<tr class='tab_bg_1'><td>" . __('Type') . "</td>";
+      echo "<tr class='tab_bg_1'><td>" . _n('Type', 'Types', 1) . "</td>";
       echo "<td>";
       if (!Session::haveRight(static::$rightname, UPDATE)) {
          $itemtype = $this->fields['itemtype'];
@@ -396,7 +398,7 @@ class Notification extends CommonDBTM {
          'id'                 => '5',
          'table'              => $this->getTable(),
          'field'              => 'itemtype',
-         'name'               => __('Type'),
+         'name'               => _n('Type', 'Types', 1),
          'datatype'           => 'itemtypename',
          'itemtype_list'      => 'notificationtemplates_types',
          'massiveaction'      => false
@@ -422,7 +424,7 @@ class Notification extends CommonDBTM {
          'id'                 => '80',
          'table'              => 'glpi_entities',
          'field'              => 'completename',
-         'name'               => __('Entity'),
+         'name'               => Entity::getTypeName(1),
          'massiveaction'      => false,
          'datatype'           => 'dropdown'
       ];
@@ -457,11 +459,6 @@ class Notification extends CommonDBTM {
       return $actions;
    }
 
-   /**
-   * @since version 0.85
-   *
-   * @see CommonDBTM::showMassiveActionsSubForm()
-   **/
    static function showMassiveActionsSubForm(MassiveAction $ma) {
       switch ($ma->getAction()) {
          case 'add_template':
@@ -657,10 +654,6 @@ class Notification extends CommonDBTM {
    }
 
 
-   /**
-    * @since 0.90.4
-    * @see CommonDBTM::prepareInputForAdd()
-   **/
    function prepareInputForAdd($input) {
 
       if (isset($input["itemtype"]) && empty($input["itemtype"])) {
@@ -673,10 +666,6 @@ class Notification extends CommonDBTM {
    }
 
 
-   /**
-    * @since 0.90.4
-    * @see CommonDBTM::prepareInputForUpdate()
-   **/
    function prepareInputForUpdate($input) {
 
       if (isset($input["itemtype"]) && empty($input["itemtype"])) {

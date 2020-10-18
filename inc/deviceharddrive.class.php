@@ -59,7 +59,7 @@ class DeviceHardDrive extends CommonDevice {
                                      'type'  => 'text',
                                      'unit'  => __('Mio')],
                                ['name'  => 'deviceharddrivemodels_id',
-                                     'label' => __('Model'),
+                                     'label' => _n('Model', 'Models', 1),
                                      'type'  => 'dropdownValue'],
                                ['name'  => 'interfacetypes_id',
                                      'label' => __('Interface'),
@@ -109,7 +109,7 @@ class DeviceHardDrive extends CommonDevice {
          'id'                 => '15',
          'table'              => 'glpi_deviceharddrivemodels',
          'field'              => 'name',
-         'name'               => __('Model'),
+         'name'               => _n('Model', 'Models', 1),
          'datatype'           => 'dropdown'
       ];
 
@@ -134,29 +134,16 @@ class DeviceHardDrive extends CommonDevice {
    }
 
 
-   /**
-    * @since 0.85
-    * @see CommonDropdown::prepareInputForAdd()
-   **/
    function prepareInputForAdd($input) {
       return $this->prepareInputForAddOrUpdate($input);
    }
 
 
-   /**
-    * @since 0.85
-    * @see CommonDropdown::prepareInputForUpdate()
-   **/
    function prepareInputForUpdate($input) {
       return $this->prepareInputForAddOrUpdate($input);
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDevice::getHTMLTableHeader()
-   **/
    static function getHTMLTableHeader($itemtype, HTMLTableBase $base,
                                       HTMLTableSuperHeader $super = null,
                                       HTMLTableHeader $father = null, array $options = []) {

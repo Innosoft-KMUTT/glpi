@@ -335,7 +335,7 @@ class Lock {
       $params = [
          'glpi_ipaddresses.is_dynamic' => 1,
          'glpi_ipaddresses.is_deleted' => 1,
-         'glpi_ipaddresses.itemtype'   => 'Networkname',
+         'glpi_ipaddresses.itemtype'   => 'NetworkName',
          'glpi_ipaddresses.items_id'   => new QueryExpression($DB->quoteName('glpi_networknames.id')),
          'glpi_networknames.itemtype'  => 'NetworkPort',
          'glpi_networknames.items_id'  => new QueryExpression($DB->quoteName('glpi_networkports.id')),
@@ -588,7 +588,7 @@ class Lock {
     * @since 0.85
     *
     * @see CommonDBTM::getMassiveActionsForItemtype()
-   **/
+    **/
    static function getMassiveActionsForItemtype(array &$actions, $itemtype, $is_deleted = 0,
                                                 CommonDBTM $checkitem = null) {
 
@@ -606,21 +606,21 @@ class Lock {
     * @since 0.85
     *
     * @see CommonDBTM::showMassiveActionsSubForm()
-   **/
+    **/
    static function showMassiveActionsSubForm(MassiveAction $ma) {
 
       switch ($ma->getAction()) {
          case 'unlock' :
             $types = ['Monitor'                => _n('Monitor', 'Monitors', Session::getPluralNumber()),
-                           'Peripheral'             => _n('Device', 'Devices', Session::getPluralNumber()),
-                           'Printer'                => _n('Printer', 'Printers', Session::getPluralNumber()),
-                           'SoftwareVersion'        => _n('Version', 'Versions', Session::getPluralNumber()),
-                           'NetworkPort'            => _n('Network port', 'Network ports', Session::getPluralNumber()),
-                           'NetworkName'            => _n('Network name', 'Network names', Session::getPluralNumber()),
-                           'IPAddress'              => _n('IP address', 'IP addresses', Session::getPluralNumber()),
-                           'Item_Disk'              => _n('Volume', 'Volumes', Session::getPluralNumber()),
+                           'Peripheral'             => Peripheral::getTypeName(Session::getPluralNumber()),
+                           'Printer'                => Printer::getTypeName(Session::getPluralNumber()),
+                           'SoftwareVersion'        => SoftwareVersion::getTypeName(Session::getPluralNumber()),
+                           'NetworkPort'            => NetworkPort::getTypeName(Session::getPluralNumber()),
+                           'NetworkName'            => NetworkName::getTypeName(Session::getPluralNumber()),
+                           'IPAddress'              => IPAddress::getTypeName(Session::getPluralNumber()),
+                           'Item_Disk'              => Item_Disk::getTypeName(Session::getPluralNumber()),
                            'Device'                 => _n('Component', 'Components', Session::getPluralNumber()),
-                           'ComputerVirtualMachine' => _n('Virtual machine', 'Virtual machines', Session::getPluralNumber())];
+                           'ComputerVirtualMachine' => ComputerVirtualMachine::getTypeName(Session::getPluralNumber())];
 
             echo __('Select the type of the item that must be unlock');
             echo "<br><br>\n";
@@ -641,7 +641,7 @@ class Lock {
     * @since 0.85
     *
     * @see CommonDBTM::processMassiveActionsForOneItemtype()
-   **/
+    **/
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $baseitem,
                                                        array $ids) {
       global $DB;

@@ -620,9 +620,6 @@ class KnowbaseItem extends CommonDBVisible implements ExtraVisibilityCriteria {
       return $criteria;
    }
 
-   /**
-    * @see CommonDBTM::prepareInputForAdd()
-   **/
    function prepareInputForAdd($input) {
 
       // set new date if not exists
@@ -1295,7 +1292,9 @@ class KnowbaseItem extends CommonDBVisible implements ExtraVisibilityCriteria {
 
                }
 
-               $search_where = ['OR' => $ors];
+               $search_where =  $criteria['WHERE']; // Visibility restrict criteria
+
+               $search_where[] = ['OR' => $ors];
 
                // Add visibility date
                $visibility_crit = [
@@ -1511,7 +1510,7 @@ class KnowbaseItem extends CommonDBVisible implements ExtraVisibilityCriteria {
          echo Search::showHeaderItem($output_type, __('Category'), $header_num);
 
          if ($output_type == Search::HTML_OUTPUT) {
-            echo Search::showHeaderItem($output_type, _n('Associated element', 'Associated elements', 2), $header_num);
+            echo Search::showHeaderItem($output_type, _n('Associated element', 'Associated elements', Session::getPluralNumber()), $header_num);
          }
 
          if (isset($options['item_itemtype'])
@@ -1820,7 +1819,7 @@ class KnowbaseItem extends CommonDBVisible implements ExtraVisibilityCriteria {
          'id'                 => '5',
          'table'              => $this->getTable(),
          'field'              => 'date',
-         'name'               => __('Date'),
+         'name'               => _n('Date', 'Dates', 1),
          'datatype'           => 'datetime',
          'massiveaction'      => false
       ];
@@ -1888,7 +1887,7 @@ class KnowbaseItem extends CommonDBVisible implements ExtraVisibilityCriteria {
          'id'                 => '70',
          'table'              => 'glpi_users',
          'field'              => 'name',
-         'name'               => __('User'),
+         'name'               => User::getTypeName(1),
          'massiveaction'      => false,
          'datatype'           => 'dropdown',
          'right'              => 'all'
@@ -1900,11 +1899,6 @@ class KnowbaseItem extends CommonDBVisible implements ExtraVisibilityCriteria {
       return $tab;
    }
 
-   /**
-    * @since 0.85
-    *
-    * @see commonDBTM::getRights()
-   **/
    function getRights($interface = 'central') {
 
       if ($interface == 'central') {

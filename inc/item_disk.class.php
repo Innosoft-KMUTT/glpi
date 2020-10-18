@@ -60,9 +60,6 @@ class Item_Disk extends CommonDBChild {
    }
 
 
-   /**
-    * @see CommonGLPI::getTabNameForItem()
-   **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       // can exists for template
@@ -94,11 +91,6 @@ class Item_Disk extends CommonDBChild {
    }
 
 
-   /**
-    * @see CommonGLPI::defineTabs()
-    *
-    * @since 0.85
-   **/
    function defineTabs($options = []) {
 
       $ong = [];
@@ -151,7 +143,7 @@ class Item_Disk extends CommonDBChild {
       }
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Item')."</td>";
+      echo "<td>"._n('Item', 'Items', 1)."</td>";
       echo "<td>".$item->getLink()."</td>";
       if (Plugin::haveImport()) {
          echo "<td>".__('Automatic inventory')."</td>";
@@ -180,7 +172,7 @@ class Item_Disk extends CommonDBChild {
       echo "<td>".__('Mount point')."</td>";
       echo "<td>";
       Html::autocompletionTextField($this, "mountpoint");
-      echo "</td><td>".__('File system')."</td>";
+      echo "</td><td>".Filesystem::getTypeName(1)."</td>";
       echo "<td>";
       Filesystem::dropdown(['value' => $this->fields["filesystems_id"]]);
       echo "</td></tr>";
@@ -304,7 +296,7 @@ class Item_Disk extends CommonDBChild {
          }
          $header .= "<th>".__('Partition')."</th>";
          $header .= "<th>".__('Mount point')."</th>";
-         $header .= "<th>".__('File system')."</th>";
+         $header .= "<th>".Filesystem::getTypeName(1)."</th>";
          $header .= "<th>".__('Global size')."</th>";
          $header .= "<th>".__('Free size')."</th>";
          $header .= "<th>".__('Free percentage')."</th>";
@@ -543,7 +535,7 @@ class Item_Disk extends CommonDBChild {
          'id'                 => '155',
          'table'              => 'glpi_filesystems',
          'field'              => 'name',
-         'name'               => __('File system'),
+         'name'               => Filesystem::getTypeName(1),
          'forcegroupby'       => true,
          'massiveaction'      => false,
          'datatype'           => 'dropdown',

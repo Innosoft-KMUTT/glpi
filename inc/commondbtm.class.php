@@ -329,7 +329,7 @@ class CommonDBTM extends CommonGLPI {
     *
     * @since 9.2
     *
-    * @param Array $crit search criteria
+    * @param array $crit search criteria
     *
     * @return boolean|array
     */
@@ -1415,6 +1415,10 @@ class CommonDBTM extends CommonGLPI {
       global $DB, $GLPI_CACHE;
 
       if ($DB->isSlave()) {
+         return false;
+      }
+
+      if (!array_key_exists(static::getIndexName(), $input)) {
          return false;
       }
 
@@ -2642,15 +2646,13 @@ class CommonDBTM extends CommonGLPI {
             if ($this->isEntityAssign()) {
                if (isset($params['entities_id'])) {
                   $entity = $this->fields['entities_id'] = $params['entities_id'];
-
+               } else if (isset($this->fields['entities_id'])) {
+                  //It's an existing object to be displayed
+                  $entity = $this->fields['entities_id'];
                } else if ($this->isNewID($ID)
                           || ($params['withtemplate'] == 2)) {
                   //It's a new object to be added
                   $entity = $_SESSION['glpiactive_entity'];
-
-               } else {
-                  //It's an existing object to be displayed
-                  $entity = $this->fields['entities_id'];
                }
 
                echo "<input type='hidden' name='entities_id' value='$entity'>";
@@ -3348,7 +3350,7 @@ class CommonDBTM extends CommonGLPI {
       if ($this->isField('locations_id') && $this->getType()!='Location') {
          $tmp = Dropdown::getDropdownName("glpi_locations", $this->getField('locations_id'));
          if ((strlen($tmp) != 0) && ($tmp != '&nbsp;')) {
-            $toadd[] = ['name'  => __('Location'),
+            $toadd[] = ['name'  => Location::getTypeName(1),
                              'value' => $tmp];
          }
       }
@@ -3356,7 +3358,7 @@ class CommonDBTM extends CommonGLPI {
       if ($this->isField('users_id')) {
          $tmp = getUserName($this->getField('users_id'));
          if ((strlen($tmp) != 0) && ($tmp != '&nbsp;')) {
-            $toadd[] = ['name'  => __('User'),
+            $toadd[] = ['name'  => User::getTypeName(1),
                              'value' => $tmp];
          }
       }
@@ -3365,7 +3367,7 @@ class CommonDBTM extends CommonGLPI {
           && ($this->getType() != 'Group')) {
          $tmp = Dropdown::getDropdownName("glpi_groups", $this->getField('groups_id'));
          if ((strlen($tmp) != 0) && ($tmp != '&nbsp;')) {
-            $toadd[] = ['name'  => __('Group'),
+            $toadd[] = ['name'  => Group::getTypeName(1),
                              'value' => $tmp];
          }
       }
@@ -3868,9 +3870,8 @@ class CommonDBTM extends CommonGLPI {
          MassiveAction::getAddTransferList($actions);
       }
 
-      //massive action to link appliances from possible item types
       if (in_array(static::getType(), Appliance::getTypes(true)) && static::canUpdate()) {
-         $actions['Appliance'.MassiveAction::CLASS_ACTION_SEPARATOR.'add_item'] = __('Associate to appliance');
+         $actions['Appliance' . MassiveAction::CLASS_ACTION_SEPARATOR . 'add_item'] = _x('button', 'Associate to an appliance');
       }
 
       return $actions;
@@ -3894,7 +3895,7 @@ class CommonDBTM extends CommonGLPI {
     *                   and may have moreparams)
     *    - used : array / Already used items ID: not to display in dropdown (default empty)
     *
-    * @return void display the dropdown
+    * @return string|void display the dropdown
    **/
    static function dropdown($options = []) {
       /// TODO try to revert usage : Dropdown::show calling this function
@@ -4117,7 +4118,7 @@ class CommonDBTM extends CommonGLPI {
 
       return ['id'          => __('ID'),
                    'serial'      => __('Serial number'),
-                   'entities_id' => __('Entity')];
+                   'entities_id' => Entity::getTypeName(1)];
    }
 
 
@@ -4940,7 +4941,7 @@ class CommonDBTM extends CommonGLPI {
       } else {
          echo "<tr><th>".$item->getTypeName(1)."</th>";
          if (Session::isMultiEntitiesMode()) {
-            echo "<th>".__('Entity')."</th>";
+            echo "<th>".Entity::getTypeName(1)."</th>";
          }
          echo "<th>".__('Templates')."</th></tr>";
       }
@@ -5476,7 +5477,7 @@ class CommonDBTM extends CommonGLPI {
     *
     * @param integer $ID ID of the item to get
     *
-    * @return boolean true if succeed else false
+    * @return static|boolean false on failure
    */
    public static function getById(int $id) {
       $item = new static();

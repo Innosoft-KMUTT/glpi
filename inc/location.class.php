@@ -127,7 +127,7 @@ class Location extends CommonTreeDropdown {
          'id'                 => '3',
          'table'              => 'glpi_locations',
          'field'              => 'completename',
-         'name'               => __('Location'),
+         'name'               => Location::getTypeName(1),
          'datatype'           => 'dropdown'
       ];
 
@@ -370,11 +370,6 @@ class Location extends CommonTreeDropdown {
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see CommonTreeDropdown::getTabNameForItem()
-   **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if (!$withtemplate) {
@@ -390,9 +385,6 @@ class Location extends CommonTreeDropdown {
    }
 
 
-   /**
-    * @since 0.85
-   **/
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
       if ($item->getType() == __CLASS__) {
@@ -467,9 +459,9 @@ class Location extends CommonTreeDropdown {
 
       // Mini Search engine
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr class='tab_bg_1'><th colspan='2'>".__('Type')."</th></tr>";
+      echo "<tr class='tab_bg_1'><th colspan='2'>"._n('Type', 'Types', 1)."</th></tr>";
       echo "<tr class='tab_bg_1'><td class='center'>";
-      echo __('Type')."&nbsp;";
+      echo _n('Type', 'Types', 1)."&nbsp;";
       $all_types = array_merge(['0' => '---'], $CFG_GLPI['location_types']);
       Dropdown::showItemType(
          $all_types, [
@@ -484,8 +476,8 @@ class Location extends CommonTreeDropdown {
          Html::printAjaxPager('', $start, $number);
 
          echo "<table class='tab_cadre_fixe'>";
-         echo "<tr><th>".__('Type')."</th>";
-         echo "<th>".__('Entity')."</th>";
+         echo "<tr><th>"._n('Type', 'Types', 1)."</th>";
+         echo "<th>".Entity::getTypeName(1)."</th>";
          echo "<th>".__('Name')."</th>";
          echo "<th>".__('Serial number')."</th>";
          echo "<th>".__('Inventory number')."</th>";
@@ -520,5 +512,22 @@ class Location extends CommonTreeDropdown {
          default:
             throw new \RuntimeException("Unknown {$field['type']}");
       }
+   }
+
+   static function getIcon() {
+      return "fas fa-map-marker-alt";
+   }
+
+   public function prepareInputForAdd($input) {
+      $input = parent::prepareInputForAdd($input);
+      if (empty($input['latitude']) && empty($input['longitude']) && empty($input['altitude']) &&
+         !empty($input[static::getForeignKeyField()])) {
+         $parent = new static();
+         $parent->getFromDB($input[static::getForeignKeyField()]);
+         $input['latitude'] = $parent->fields['latitude'];
+         $input['longitude'] = $parent->fields['longitude'];
+         $input['altitude'] = $parent->fields['altitude'];
+      }
+      return $input;
    }
 }

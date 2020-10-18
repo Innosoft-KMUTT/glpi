@@ -166,7 +166,7 @@ class NetworkPort_Vlan extends CommonDBRelation {
          $header_bottom .= Html::getCheckAllAsCheckbox('mass'.__CLASS__.$rand)."</th>";
       }
       $header_end .= "<th>".__('Name')."</th>";
-      $header_end .= "<th>".__('Entity')."</th>";
+      $header_end .= "<th>".Entity::getTypeName(1)."</th>";
       $header_end .= "<th>".__('Tagged')."</th>";
       $header_end .= "<th>".__('ID TAG')."</th>";
       $header_end .= "</tr>";
@@ -270,11 +270,6 @@ class NetworkPort_Vlan extends CommonDBRelation {
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see CommonDBRelation::showRelationMassiveActionsSubForm()
-   **/
    static function showRelationMassiveActionsSubForm(MassiveAction $ma, $peer_number) {
 
       if ($ma->getAction() == 'add') {
@@ -283,11 +278,6 @@ class NetworkPort_Vlan extends CommonDBRelation {
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see CommonDBRelation::getRelationInputForProcessingOfMassiveActions()
-   **/
    static function getRelationInputForProcessingOfMassiveActions($action, CommonDBTM $item,
                                                                  array $ids, array $input) {
       if ($action == 'add') {

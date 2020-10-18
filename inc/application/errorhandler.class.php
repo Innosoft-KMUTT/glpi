@@ -78,7 +78,8 @@ class ErrorHandler {
       E_PARSE,
       E_CORE_ERROR,
       E_COMPILE_ERROR,
-      E_USER_ERROR
+      E_USER_ERROR,
+      E_RECOVERABLE_ERROR,
    ];
 
    /**
@@ -105,7 +106,7 @@ class ErrorHandler {
    /**
     * Last fatal error trace.
     *
-    * @var array
+    * @var string
     */
    private $last_fatal_trace;
 
@@ -181,7 +182,7 @@ class ErrorHandler {
          return $return;
       }
 
-      if (0 === error_reporting()) {
+      if (!(error_reporting() & $error_code)) {
          // Do not handle error if '@' operator is used on errored expression
          // see https://www.php.net/manual/en/language.operators.errorcontrol.php
          return $return;

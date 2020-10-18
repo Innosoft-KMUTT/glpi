@@ -716,9 +716,10 @@ class Stat extends CommonGLPI {
     * @param $param              (default '')
     * @param $value              (default '')
     * @param $value2             (default '')
+    * @param $add_criteria          (default [''])
     */
    static function constructEntryValues($itemtype, $type, $begin = "", $end = "", $param = "", $value = "",
-                                        $value2 = "") {
+                                        $value2 = "", array $add_criteria = []) {
       $DB = \DBConnection::getReadConnection();
 
       if (!$item = getItemForItemtype($itemtype)) {
@@ -1301,6 +1302,10 @@ class Stat extends CommonGLPI {
          return [];
       }
 
+      if (count($add_criteria)) {
+         $criteria = array_merge_recursive($criteria, $add_criteria);
+      }
+
       $iterator = $DB->request($criteria);
       while ($row = $iterator->next()) {
          $date             = $row['date_unix'];
@@ -1402,9 +1407,9 @@ class Stat extends CommonGLPI {
          echo Search::showHeader($output_type, $end_display-$start+1, 2, 1);
          $header_num = 1;
          echo Search::showNewLine($output_type);
-         echo Search::showHeaderItem($output_type, _n('Associated element', 'Associated elements', 2), $header_num);
+         echo Search::showHeaderItem($output_type, _n('Associated element', 'Associated elements', Session::getPluralNumber()), $header_num);
          if ($view_entities) {
-            echo Search::showHeaderItem($output_type, __('Entity'), $header_num);
+            echo Search::showHeaderItem($output_type, Entity::getTypeName(1), $header_num);
          }
          echo Search::showHeaderItem($output_type, __('Number of tickets'), $header_num);
          echo Search::showEndLine($output_type);
@@ -1467,7 +1472,7 @@ class Stat extends CommonGLPI {
       $stat_list["Ticket"]["Ticket_Item"]["file"]     = "stat.item.php";
 
       if (Problem::canView()) {
-         $opt_list["Problem"]                               = _n('Problem', 'Problems', Session::getPluralNumber());
+         $opt_list["Problem"]                               = Problem::getTypeName(Session::getPluralNumber());
 
          $stat_list["Problem"]["Problem_Global"]["name"]    = __('Global');
          $stat_list["Problem"]["Problem_Global"]["file"]    = "stat.global.php?itemtype=Problem";

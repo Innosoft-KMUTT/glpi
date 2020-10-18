@@ -62,7 +62,8 @@ class MailCollector extends DbTestCase {
                   'use_mail_date'        => '',
                   'date_creation'        => '',
                   'requester_field'      => '',
-                  'add_cc_to_observer'   => ''
+                  'add_cc_to_observer'   => '',
+                  'collect_only_unread'  => ''
                ]);
    }
 
@@ -196,17 +197,18 @@ class MailCollector extends DbTestCase {
       }
 
       $this->mailgate_id = (int)$collector->add([
-         'name'               => 'testuser',
-         'login'              => 'testuser',
-         'is_active'          => true,
-         'passwd'             => 'applesauce',
-         'mail_server'        => '127.0.0.1',
-         'server_type'        => '/imap',
-         'server_port'        => 143,
-         'server_ssl'         => '',
-         'server_cert'        => '/novalidate-cert',
-         'add_cc_to_observer' => 1, //add ccuser as observer in ticket
-         'requester_field'    => \MailCollector::REQUESTER_FIELD_REPLY_TO,
+         'name'                  => 'testuser',
+         'login'                 => 'testuser',
+         'is_active'             => true,
+         'passwd'                => 'applesauce',
+         'mail_server'           => '127.0.0.1',
+         'server_type'           => '/imap',
+         'server_port'           => 143,
+         'server_ssl'            => '',
+         'server_cert'           => '/novalidate-cert',
+         'add_cc_to_observer'    => 1,
+         'collect_only_unread'   => 1,
+         'requester_field'       => \MailCollector::REQUESTER_FIELD_REPLY_TO,
       ]);
 
       $this->integer($this->mailgate_id)->isGreaterThan(0);
@@ -244,30 +246,59 @@ class MailCollector extends DbTestCase {
       $this->collector->maxfetch_emails = 1000; // Be sure to fetch all mails from test suite
       $msg = $this->collector->collect($this->mailgate_id);
 
-      $total_count              = count(glob(GLPI_ROOT . '/tests/emails-tests/*.eml'));
-      $expected_refused_count   = 2;
-      $expected_error_count     = 1;
-      $expected_blacklist_count = 0;
+      $total_count                     = count(glob(GLPI_ROOT . '/tests/emails-tests/*.eml'));
+      $expected_refused_count          = 2;
+      $expected_error_count            = 2;
+      $expected_blacklist_count        = 0;
+      $expected_expected_already_seen  = 0;
 
       $this->variable($msg)->isIdenticalTo(
          sprintf(
-            'Number of messages: available=%1$s, retrieved=%2$s, refused=%3$s, errors=%4$s, blacklisted=%5$s',
+            'Number of messages: available=%1$s, already imported=%2$d, retrieved=%3$s, refused=%4$s, errors=%5$s, blacklisted=%6$s',
             $total_count,
-            $total_count,
+            $expected_expected_already_seen,
+            $total_count - $expected_expected_already_seen,
             $expected_refused_count,
             $expected_error_count,
             $expected_blacklist_count
          )
       );
 
-      // Check refused emails
-      $rejecteds = iterator_to_array($DB->request(['FROM' => \NotImportedEmail::getTable()]));
-      $this->array($rejecteds)->hasSize($expected_refused_count);
-      foreach ($rejecteds as $rejected) {
-         $this->array($rejected)
-            ->variable['from']->isIdenticalTo('unknown@glpi-project.org')
-            ->variable['reason']->isEqualTo(\NotImportedEmail::USER_UNKNOWN);
+      // Check not imported emails
+      $not_imported_specs = [
+         [
+            'subject' => 'Have a problem, can you help me?',
+            'from'    => 'unknown@glpi-project.org',
+            'to'      => 'unittests@glpi-project.org',
+            'reason'  => \NotImportedEmail::USER_UNKNOWN,
+         ],
+         [
+            'subject' => 'Test\'ed issue',
+            'from'    => 'unknown@glpi-project.org',
+            'to'      => 'unittests@glpi-project.org',
+            'reason'  => \NotImportedEmail::USER_UNKNOWN,
+         ],
+         [
+            'subject' => null, // Subject is empty has mail was not processed
+            'from'    => '', // '' as value is not nullable in DB
+            'to'      => '', // '' as value is not nullable in DB
+            'reason'  => \NotImportedEmail::FAILED_OPERATION,
+         ]
+      ];
+      $iterator = $DB->request(['FROM' => \NotImportedEmail::getTable()]);
+      $this->integer(count($iterator))->isIdenticalTo(count($not_imported_specs));
+
+      $not_imported_values = [];
+      while ($data = $iterator->next()) {
+         $not_imported_values[] = [
+            'subject' => $data['subject'],
+            'from'    => $data['from'],
+            'to'      => $data['to'],
+            'reason'  => $data['reason'],
+         ];
+         $this->integer($data['mailcollectors_id'])->isIdenticalTo($this->mailgate_id);
       }
+      $this->array($not_imported_values)->isIdenticalTo($not_imported_specs);
 
       // Check created tickets and their actors
       $actors_specs = [
@@ -297,6 +328,7 @@ class MailCollector extends DbTestCase {
                'тест2',
                'Inlined image with no Content-Disposition',
                'This is a mail without subject.', // No subject = name is set using ticket contents
+               'Image tag splitted on multiple lines',
             ]
          ],
          // Mails having "normal" user as observer (add_cc_to_observer = true)
@@ -311,7 +343,7 @@ class MailCollector extends DbTestCase {
 
       foreach ($actors_specs as $actor_specs) {
          $iterator = $DB->request([
-            'SELECT' => ['t.id', 't.name', 'tu.users_id'],
+            'SELECT' => ['t.id', 't.name', 't.content', 'tu.users_id'],
             'FROM'   => \Ticket::getTable() . " AS t",
             'INNER JOIN'   => [
                \Ticket_User::getTable() . " AS tu"  => [
@@ -332,6 +364,7 @@ class MailCollector extends DbTestCase {
          $names = [];
          while ($data = $iterator->next()) {
             $names[] = $data['name'];
+            $this->string($data['content'])->notContains('cid:'); // check that image were correctly imported
          }
 
          $this->array($names)->isIdenticalTo($actor_specs['tickets_names']);
@@ -343,6 +376,7 @@ class MailCollector extends DbTestCase {
          '01-Screenshot-2018-4-12 Observatoire - France très haut débit.png',
          '01-test.JPG',
          '15-image001.png',
+         '18-blank.gif',
       ];
 
       $iterator = $DB->request(
@@ -366,12 +400,12 @@ class MailCollector extends DbTestCase {
          ]
       );
 
-      $this->integer(count($iterator))->isIdenticalTo(count($expected_docs));
-
       $filenames = [];
       while ($data = $iterator->next()) {
          $filenames[] = $data['filename'];
       }
       $this->array($filenames)->isIdenticalTo($expected_docs);
+
+      $this->integer(count($iterator))->isIdenticalTo(count($expected_docs));
    }
 }

@@ -56,10 +56,10 @@ class DeviceMemory extends CommonDevice {
                                      'type'  => 'text',
                                      'unit'  => __('MHz')],
                                ['name'  => 'devicememorytypes_id',
-                                     'label' => __('Type'),
+                                     'label' => _n('Type', 'Types', 1),
                                      'type'  => 'dropdownValue'],
                                ['name'  => 'devicememorymodels_id',
-                                     'label' => __('Model'),
+                                     'label' => _n('Model', 'Models', 1),
                                      'type'  => 'dropdownValue']]);
    }
 
@@ -89,7 +89,7 @@ class DeviceMemory extends CommonDevice {
          'id'                 => '13',
          'table'              => 'glpi_devicememorytypes',
          'field'              => 'name',
-         'name'               => __('Type'),
+         'name'               => _n('Type', 'Types', 1),
          'datatype'           => 'dropdown'
       ];
 
@@ -97,7 +97,7 @@ class DeviceMemory extends CommonDevice {
          'id'                 => '14',
          'table'              => 'glpi_devicememorymodels',
          'field'              => 'name',
-         'name'               => __('Model'),
+         'name'               => _n('Model', 'Models', 1),
          'datatype'           => 'dropdown'
       ];
 
@@ -122,29 +122,16 @@ class DeviceMemory extends CommonDevice {
    }
 
 
-   /**
-    * @since 0.85
-    * @see CommonDropdown::prepareInputForAdd()
-   **/
    function prepareInputForAdd($input) {
       return $this->prepareInputForAddOrUpdate($input);
    }
 
 
-   /**
-    * @since 0.85
-    * @see CommonDropdown::prepareInputForUpdate()
-   **/
    function prepareInputForUpdate($input) {
       return $this->prepareInputForAddOrUpdate($input);
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDevice::getHTMLTableHeader()
-   **/
    static function getHTMLTableHeader($itemtype, HTMLTableBase $base,
                                       HTMLTableSuperHeader $super = null,
                                       HTMLTableHeader $father = null, array $options = []) {
@@ -158,7 +145,7 @@ class DeviceMemory extends CommonDevice {
       switch ($itemtype) {
          case 'Computer' :
             Manufacturer::getHTMLTableHeader(__CLASS__, $base, $super, $father, $options);
-            $base->addHeader('devicememory_type', __('Type'), $super, $father);
+            $base->addHeader('devicememory_type', _n('Type', 'Types', 1), $super, $father);
             $base->addHeader('devicememory_frequency', __('Frequency'), $super, $father);
             break;
       }
@@ -166,11 +153,6 @@ class DeviceMemory extends CommonDevice {
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDevice::getHTMLTableCellForItem()
-   **/
    function getHTMLTableCellForItem(HTMLTableRow $row = null, CommonDBTM $item = null,
                                     HTMLTableCell $father = null, array $options = []) {
 
@@ -199,13 +181,6 @@ class DeviceMemory extends CommonDevice {
    }
 
 
-   /**
-    * Criteria used for import function
-    *
-    * @see CommonDevice::getImportCriteria()
-    *
-    * @since 0.84
-   **/
    function getImportCriteria() {
 
       return ['designation'          => 'equal',
@@ -223,7 +198,7 @@ class DeviceMemory extends CommonDevice {
          'id'                 => '110',
          'table'              => 'glpi_devicememories',
          'field'              => 'designation',
-         'name'               => __('Memory type'),
+         'name'               => DeviceMemoryType::getTypeName(1),
          'forcegroupby'       => true,
          'usehaving'          => true,
          'massiveaction'      => false,
@@ -241,7 +216,7 @@ class DeviceMemory extends CommonDevice {
          'table'              => 'glpi_items_devicememories',
          'field'              => 'size',
          'unit'               => 'auto',
-         'name'               => __('Memory'),
+         'name'               => _n('Memory', 'Memories', 1),
          'forcegroupby'       => true,
          'usehaving'          => true,
          'datatype'           => 'number',

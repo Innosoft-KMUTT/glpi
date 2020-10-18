@@ -369,9 +369,6 @@ abstract class CommonDBChild extends CommonDBConnexity {
    }
 
 
-   /**
-    * @since 0.84
-   **/
    function addNeededInfoToInput($input) {
 
       // is entity missing and forwarding on ?
@@ -398,9 +395,6 @@ abstract class CommonDBChild extends CommonDBConnexity {
    }
 
 
-   /**
-    * @since 0.84
-   **/
    function prepareInputForAdd($input) {
 
       if (!is_array($input)) {
@@ -417,9 +411,6 @@ abstract class CommonDBChild extends CommonDBConnexity {
    }
 
 
-   /**
-    * @since 0.84
-   **/
    function prepareInputForUpdate($input) {
 
       if (!is_array($input)) {
@@ -765,7 +756,7 @@ abstract class CommonDBChild extends CommonDBConnexity {
     * @param string       $field_name  the name of the HTML field inside Item's form
     * @param boolean|null $canedit     boolean to force rights, NULL to use default behaviour
     *
-    * @return void
+    * @return void|boolean (display) Returns false if there is a rights error.
    **/
    static function showChildsForItemForm(CommonDBTM $item, $field_name, $canedit = null) {
       global $DB;
@@ -861,6 +852,10 @@ abstract class CommonDBChild extends CommonDBConnexity {
    }
 
    public static final function getItemField($itemtype): string {
+      if (is_subclass_of($itemtype, 'Rule')) {
+         $itemtype = 'Rule';
+      }
+
       if (isset(static::$items_id) && getItemtypeForForeignKeyField(static::$items_id) == $itemtype) {
          return static::$items_id;
       }

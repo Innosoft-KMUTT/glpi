@@ -133,7 +133,7 @@ class ITILCategory extends CommonTreeDropdown {
          'id'                 => '71',
          'table'              => 'glpi_groups',
          'field'              => 'completename',
-         'name'               => __('Group'),
+         'name'               => Group::getTypeName(1),
          'datatype'           => 'dropdown'
       ];
 
@@ -323,9 +323,6 @@ class ITILCategory extends CommonTreeDropdown {
       return -1;
    }
 
-   /**
-    * @since 9.5.0
-   **/
    function prepareInputForAdd($input) {
       $input = parent::prepareInputForAdd($input);
 
@@ -340,9 +337,6 @@ class ITILCategory extends CommonTreeDropdown {
    }
 
 
-   /**
-    * @since 9.5.0
-   **/
    function prepareInputForUpdate($input) {
       $input = parent::prepareInputForUpdate($input);
 
@@ -424,8 +418,8 @@ class ITILCategory extends CommonTreeDropdown {
          echo "<th>".__('Name')."</th>";
          echo "<th>".__('Incident')."</th>";
          echo "<th>".__('Request')."</th>";
-         echo "<th>".__('Change')."</th>";
-         echo "<th>".__('Problem')."</th>";
+         echo "<th>".Change::getTypeName(1)."</th>";
+         echo "<th>".Problem::getTypeName(1)."</th>";
          echo "</tr>";
 
          while ($data = $iterator->next()) {

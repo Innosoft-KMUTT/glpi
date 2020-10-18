@@ -150,7 +150,7 @@ class Domain_Item extends CommonDBRelation {
     *
     * @param Domain $domain Domain object
     *
-    * @return void
+    * @return void|boolean (display) Returns false if there is a rights error.
     **/
    public static function showForDomain(Domain $domain) {
       global $DB;
@@ -228,10 +228,10 @@ class Domain_Item extends CommonDBRelation {
          echo "<th width='10'>" . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand) . "</th>";
       }
 
-      echo "<th>" . __('Type') . "</th>";
+      echo "<th>" . _n('Type', 'Types', 1) . "</th>";
       echo "<th>" . __('Name') . "</th>";
       if (Session::isMultiEntitiesMode()) {
-         echo "<th>" . __('Entity') . "</th>";
+         echo "<th>" . Entity::getTypeName(1) . "</th>";
       }
       echo "<th>" . DomainRelation::getTypeName(1) . "</th>";
       echo "<th>" . __('Serial number') . "</th>";
@@ -501,11 +501,11 @@ class Domain_Item extends CommonDBRelation {
       }
       echo "<th>" . __('Name') . "</th>";
       if (Session::isMultiEntitiesMode()) {
-         echo "<th>" . __('Entity') . "</th>";
+         echo "<th>" . Entity::getTypeName(1) . "</th>";
       }
       echo "<th>" . __('Group in charge') . "</th>";
       echo "<th>" . __('Technician in charge') . "</th>";
-      echo "<th>" . __('Type') . "</th>";
+      echo "<th>" . _n('Type', 'Types', 1) . "</th>";
       if (!$item instanceof DomainRelation) {
          echo "<th>" . DomainRelation::getTypeName(1) . "</th>";
       }

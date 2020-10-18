@@ -57,7 +57,7 @@ class DeviceDrive extends CommonDevice {
                                      'label' => __('Interface'),
                                      'type'  => 'dropdownValue'],
                                ['name'  => 'devicedrivemodels_id',
-                                     'label' => __('Model'),
+                                     'label' => _n('Model', 'Models', 1),
                                      'type'  => 'dropdownValue']]);
    }
 
@@ -94,7 +94,7 @@ class DeviceDrive extends CommonDevice {
          'id'                 => '15',
          'table'              => 'glpi_devicedrivemodels',
          'field'              => 'name',
-         'name'               => __('Model'),
+         'name'               => _n('Model', 'Models', 1),
          'datatype'           => 'dropdown'
       ];
 
@@ -102,11 +102,6 @@ class DeviceDrive extends CommonDevice {
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDevice::getHTMLTableHeader()
-   **/
    static function getHTMLTableHeader($itemtype, HTMLTableBase $base,
                                       HTMLTableSuperHeader $super = null,
                                       HTMLTableHeader $father = null, array $options = []) {
@@ -129,11 +124,6 @@ class DeviceDrive extends CommonDevice {
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDevice::getHTMLTableCellForItem()
-   **/
    function getHTMLTableCellForItem(HTMLTableRow $row = null, CommonDBTM $item = null,
                                     HTMLTableCell $father = null, array $options = []) {
 

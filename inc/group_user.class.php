@@ -196,16 +196,7 @@ class Group_User extends CommonDBRelation{
             'used'      => $used,
             'condition' => [
                'is_usergroup' => 1,
-               [
-                  'OR' => [
-                     ['entities_id' => $_SESSION['glpiactive_entity']],
-                     [
-                        'entities_id' => array_merge([0], $_SESSION['glpiactiveentities']),
-                        'is_recursive' => 1
-                     ]
-                  ]
-               ]
-            ]
+            ] + getEntitiesRestrictCriteria(Group::getTable(), '', '', true)
          ];
          Group::dropdown($params);
          echo "</td><td>".__('Manager')."</td><td>";
@@ -356,11 +347,11 @@ class Group_User extends CommonDBRelation{
     *
     * @since 0.83
     *
-    * @param $group              Group object
-    * @param $members   Array    filled on output of member (filtered)
-    * @param $ids       Array    of ids (not filtered)
-    * @param $crit      String   filter (is_manager, is_userdelegate) (default '')
-    * @param $tree      Boolean  true to include member of sub-group (default 0)
+    * @param Group           $group    Group object
+    * @param array           $members  Array filled on output of member (filtered)
+    * @param array           $ids      Array of ids (not filtered)
+    * @param string          $crit     Filter (is_manager, is_userdelegate) (default '')
+    * @param boolean|integer $tree     True to include member of sub-group (default 0)
     *
     * @return String tab of entity for restriction
    **/
@@ -612,7 +603,11 @@ class Group_User extends CommonDBRelation{
       $specificities                           = parent::getRelationMassiveActionsSpecificities();
 
       $specificities['select_items_options_1'] = ['right'     => 'all'];
-      $specificities['select_items_options_2'] = ['condition' => ['is_usergroup' => 1]];
+      $specificities['select_items_options_2'] = [
+         'condition' => [
+            'is_usergroup' => 1,
+         ] + getEntitiesRestrictCriteria(Group::getTable(), '', '', true)
+      ];
 
       // Define normalized action for add_item and remove_item
       $specificities['normalized']['add'][]    = 'add_supervisor';
@@ -627,11 +622,6 @@ class Group_User extends CommonDBRelation{
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see CommonDBRelation::getRelationInputForProcessingOfMassiveActions()
-   **/
    static function getRelationInputForProcessingOfMassiveActions($action, CommonDBTM $item,
                                                                  array $ids, array $input) {
       switch ($action) {
@@ -681,7 +671,7 @@ class Group_User extends CommonDBRelation{
          'id'                 => '4',
          'table'              => 'glpi_groups',
          'field'              => 'completename',
-         'name'               => __('Group'),
+         'name'               => Group::getTypeName(1),
          'massiveaction'      => false,
          'datatype'           => 'dropdown'
       ];
@@ -690,7 +680,7 @@ class Group_User extends CommonDBRelation{
          'id'                 => '5',
          'table'              => 'glpi_users',
          'field'              => 'name',
-         'name'               => __('User'),
+         'name'               => User::getTypeName(1),
          'massiveaction'      => false,
          'datatype'           => 'dropdown',
          'right'              => 'all'

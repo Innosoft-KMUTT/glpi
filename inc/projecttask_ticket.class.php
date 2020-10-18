@@ -310,16 +310,22 @@ class ProjectTask_Ticket extends CommonDBRelation{
 
          echo "</td>";
 
+         if (count($finished_states_ids)) {
+            $where = [
+               'OR'  => [
+                  'projectstates_id'   => $finished_states_ids,
+                  'is_template'        => 1
+               ]
+            ];
+         } else {
+            $where = ['is_template' => 1];
+         }
+
          $excluded_projects_it = $DB->request(
             [
                'SELECT' => ['id'],
                'FROM'   => Project::getTable(),
-               'WHERE'  => [
-                  'OR' => [
-                     'projectstates_id' => $finished_states_ids,
-                     'is_template'      => 1
-                  ]
-               ],
+               'WHERE'  => $where
             ]
          );
          $excluded_projects_ids = [];
@@ -328,18 +334,27 @@ class ProjectTask_Ticket extends CommonDBRelation{
          }
          echo "<td class='right'>";
          echo "<span id='results_projects$rand'>";
-         ProjectTask::dropdown([
+
+         $dd_params = [
             'used'        => $used,
             'entity'      => $ticket->getEntityID(),
             'entity_sons' => $ticket->isRecursive(),
-            'condition'   => [
-               'NOT' => [
-                  'glpi_projecttasks.projectstates_id'   => $finished_states_ids,
-                  'glpi_projecttasks.projects_id'        => $excluded_projects_ids
-               ]
-            ],
             'displaywith' => ['id']
-         ]);
+         ];
+
+         $condition = [];
+         if (count($finished_states_ids)) {
+            $condition['glpi_projecttasks.projectstates_id'] = $finished_states_ids;
+         }
+         if (count($excluded_projects_ids)) {
+            $condition['glpi_projecttasks.projects_id'] = $excluded_projects_ids;
+         }
+
+         if (count($condition)) {
+            $dd_params['condition'] = ['NOT' => $condition];
+         }
+
+         ProjectTask::dropdown($dd_params);
          echo "</span>";
 
          echo "</td><td width='20%'>";
@@ -357,7 +372,7 @@ class ProjectTask_Ticket extends CommonDBRelation{
       if ($numrows) {
          $columns = ['projectname'      => Project::getTypeName(Session::getPluralNumber()),
                           'name'             => ProjectTask::getTypeName(Session::getPluralNumber()),
-                          'tname'            => __('Type'),
+                          'tname'            => _n('Type', 'Types', 1),
                           'sname'            => __('Status'),
                           'percent_done'     => __('Percent done'),
                           'plan_start_date'  => __('Planned start date'),

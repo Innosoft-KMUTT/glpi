@@ -52,7 +52,7 @@ class Monitor extends CommonDBTM {
    public function getCloneRelations() :array {
       return [
          Item_OperatingSystem::class,
-         Item_devices::class,
+         Item_Devices::class,
          Infocom::class,
          Contract_Item::class,
          Document_Item::class,
@@ -81,9 +81,6 @@ class Monitor extends CommonDBTM {
    }
 
 
-   /**
-    * @see CommonGLPI::defineTabs()
-   **/
    function defineTabs($options = []) {
 
       $ong = [];
@@ -111,9 +108,6 @@ class Monitor extends CommonDBTM {
       return $ong;
    }
 
-   /**
-    * @see CommonDBTM::prepareInputForAdd()
-   **/
    function prepareInputForAdd($input) {
 
       if (isset($input["id"]) && ($input["id"] > 0)) {
@@ -184,12 +178,12 @@ class Monitor extends CommonDBTM {
       $this->showDcBreadcrumb();
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Location')."</td>";
+      echo "<td>".Location::getTypeName(1)."</td>";
       echo "<td>";
       Location::dropdown(['value'  => $this->fields["locations_id"],
                                'entity' => $this->fields["entities_id"]]);
       echo "</td>";
-      echo "<td>".__('Type')."</td>";
+      echo "<td>"._n('Type', 'Types', 1)."</td>";
       echo "<td>";
       MonitorType::dropdown(['value' => $this->fields["monitortypes_id"]]);
       echo "</td></tr>";
@@ -202,7 +196,7 @@ class Monitor extends CommonDBTM {
                            'right'  => 'own_ticket',
                            'entity' => $this->fields["entities_id"]]);
       echo "</td>";
-      echo "<td>".__('Manufacturer')."</td>";
+      echo "<td>".Manufacturer::getTypeName(1)."</td>";
       echo "<td>";
       Manufacturer::dropdown(['value' => $this->fields["manufacturers_id"]]);
       echo "</td></tr>";
@@ -217,7 +211,7 @@ class Monitor extends CommonDBTM {
          'condition' => ['is_assign' => 1]
       ]);
       echo "</td>";
-      echo "<td>".__('Model')."</td>";
+      echo "<td>"._n('Model', 'Models', 1)."</td>";
       echo "<td>";
       MonitorModel::dropdown(['value' => $this->fields["monitormodels_id"]]);
       echo "</td></tr>";
@@ -249,7 +243,7 @@ class Monitor extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('User')."</td>";
+      echo "<td>".User::getTypeName(1)."</td>";
       echo "<td>";
       User::dropdown(['value'  => $this->fields["users_id"],
                            'entity' => $this->fields["entities_id"],
@@ -266,7 +260,7 @@ class Monitor extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Group')."</td>";
+      echo "<td>".Group::getTypeName(1)."</td>";
       echo "<td>";
       Group::dropdown([
          'value'     => $this->fields["groups_id"],
@@ -352,9 +346,6 @@ class Monitor extends CommonDBTM {
    }
 
 
-   /**
-    * @see CommonDBTM::getSpecificMassiveActions()
-   **/
    function getSpecificMassiveActions($checkitem = null) {
 
       $actions = parent::getSpecificMassiveActions($checkitem);
@@ -385,7 +376,7 @@ class Monitor extends CommonDBTM {
          'id'                 => '4',
          'table'              => 'glpi_monitortypes',
          'field'              => 'name',
-         'name'               => __('Type'),
+         'name'               => _n('Type', 'Types', 1),
          'datatype'           => 'dropdown'
       ];
 
@@ -393,7 +384,7 @@ class Monitor extends CommonDBTM {
          'id'                 => '40',
          'table'              => 'glpi_monitormodels',
          'field'              => 'name',
-         'name'               => __('Model'),
+         'name'               => _n('Model', 'Models', 1),
          'datatype'           => 'dropdown'
       ];
 
@@ -446,7 +437,7 @@ class Monitor extends CommonDBTM {
          'id'                 => '70',
          'table'              => 'glpi_users',
          'field'              => 'name',
-         'name'               => __('User'),
+         'name'               => User::getTypeName(1),
          'datatype'           => 'dropdown',
          'right'              => 'all'
       ];
@@ -455,7 +446,7 @@ class Monitor extends CommonDBTM {
          'id'                 => '71',
          'table'              => 'glpi_groups',
          'field'              => 'completename',
-         'name'               => __('Group'),
+         'name'               => Group::getTypeName(1),
          'condition'          => ['is_itemgroup' => 1],
          'datatype'           => 'dropdown'
       ];
@@ -563,7 +554,7 @@ class Monitor extends CommonDBTM {
          'id'                 => '23',
          'table'              => 'glpi_manufacturers',
          'field'              => 'name',
-         'name'               => __('Manufacturer'),
+         'name'               => Manufacturer::getTypeName(1),
          'datatype'           => 'dropdown'
       ];
 
@@ -603,7 +594,7 @@ class Monitor extends CommonDBTM {
          'id'                 => '80',
          'table'              => 'glpi_entities',
          'field'              => 'completename',
-         'name'               => __('Entity'),
+         'name'               => Entity::getTypeName(1),
          'massiveaction'      => false,
          'datatype'           => 'dropdown'
       ];

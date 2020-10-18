@@ -598,10 +598,17 @@ function checkConfigFile() {
    }
 }
 
-if (!isset($_POST["install"])) {
+if (!isset($_SESSION['can_process_install']) || !isset($_POST["install"])) {
    $_SESSION = [];
 
    checkConfigFile();
+
+   // Add a flag that will be used to validate that installation can be processed.
+   // This flag is put here just after checking that DB config file does not exist yet.
+   // It is mandatory to validate that `Etape_4` to `Etape_6` are not used outside installation process
+   // to change GLPI base URL without even being authenticated.
+   $_SESSION['can_process_install'] = true;
+
    header_html("Select your language");
    choose_language();
 
@@ -621,7 +628,7 @@ if (!isset($_POST["install"])) {
    switch ($_POST["install"]) {
       case "lang_select" : // lang ok, go accept licence
          checkConfigFile();
-         header_html(__('License'));
+         header_html(SoftwareLicense::getTypeName(1));
          acceptLicense();
          break;
 

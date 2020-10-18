@@ -151,7 +151,7 @@ class Contract_Item extends CommonDBRelation{
          'id'                 => '4',
          'table'              => $this->getTable(),
          'field'              => 'itemtype',
-         'name'               => __('Type'),
+         'name'               => _n('Type', 'Types', 1),
          'massiveaction'      => false,
          'datatype'           => 'itemtypename',
          'itemtype_list'      => 'contract_types'
@@ -238,7 +238,7 @@ class Contract_Item extends CommonDBRelation{
     * @since 0.84
     *
     * @param CommonDBTM $item         CommonDBTM object wanted
-    * @param boolean    $withtemplate not used (to be deleted)
+    * @param integer    $withtemplate
     *
     * @return void
    **/
@@ -310,10 +310,10 @@ class Contract_Item extends CommonDBRelation{
       }
 
       $header_end .= "<th>".__('Name')."</th>";
-      $header_end .= "<th>".__('Entity')."</th>";
+      $header_end .= "<th>".Entity::getTypeName(1)."</th>";
       $header_end .= "<th>"._x('phone', 'Number')."</th>";
-      $header_end .= "<th>".__('Contract type')."</th>";
-      $header_end .= "<th>".__('Supplier')."</th>";
+      $header_end .= "<th>".ContractType::getTypeName(1)."</th>";
+      $header_end .= "<th>".Supplier::getTypeName(1)."</th>";
       $header_end .= "<th>".__('Start date')."</th>";
       $header_end .= "<th>".__('Initial contract period')."</th>";
       $header_end .= "</tr>";
@@ -388,9 +388,9 @@ class Contract_Item extends CommonDBRelation{
     * @since 0.84
     *
     * @param Contract $contract     Contract object
-    * @param boolean  $withtemplate (default 0)
+    * @param integer  $withtemplate (default 0)
     *
-    * @return void (display)
+    * @return void|boolean (display) Returns false if there is a rights error.
    **/
    static function showForContract(Contract $contract, $withtemplate = 0) {
       global $DB, $CFG_GLPI;
@@ -559,8 +559,8 @@ class Contract_Item extends CommonDBRelation{
          $header_bottom .= "<th width='10'>".Html::getCheckAllAsCheckbox('mass'.__CLASS__.$rand);
          $header_bottom .= "</th>";
       }
-      $header_end .= "<th>".__('Type')."</th>";
-      $header_end .= "<th>".__('Entity')."</th>";
+      $header_end .= "<th>"._n('Type', 'Types', 1)."</th>";
+      $header_end .= "<th>".Entity::getTypeName(1)."</th>";
       $header_end .= "<th>".__('Name')."</th>";
       $header_end .= "<th>".__('Serial number')."</th>";
       $header_end .= "<th>".__('Inventory number')."</th>";

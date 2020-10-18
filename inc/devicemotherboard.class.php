@@ -51,7 +51,7 @@ class DeviceMotherboard extends CommonDevice {
                                      'label' => __('Chipset'),
                                      'type'  => 'text'],
                               ['name'  => 'devicemotherboardmodels_id',
-                                     'label' => __('Model'),
+                                     'label' => _n('Model', 'Models', 1),
                                      'type'  => 'dropdownValue']]);
    }
 
@@ -72,7 +72,7 @@ class DeviceMotherboard extends CommonDevice {
          'id'                 => '12',
          'table'              => 'glpi_devicemotherboardmodels',
          'field'              => 'name',
-         'name'               => __('Model'),
+         'name'               => _n('Model', 'Models', 1),
          'datatype'           => 'dropdown'
       ];
 
@@ -80,11 +80,6 @@ class DeviceMotherboard extends CommonDevice {
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDevice::getHTMLTableHeader()
-   **/
    static function getHTMLTableHeader($itemtype, HTMLTableBase $base,
                                       HTMLTableSuperHeader $super = null,
                                       HTMLTableHeader $father = null, array $options = []) {
@@ -103,11 +98,6 @@ class DeviceMotherboard extends CommonDevice {
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDevice::getHTMLTableCellForItem()
-   **/
    function getHTMLTableCellForItem(HTMLTableRow $row = null, CommonDBTM $item = null,
                                     HTMLTableCell $father = null, array $options = []) {
 
@@ -125,13 +115,6 @@ class DeviceMotherboard extends CommonDevice {
    }
 
 
-   /**
-    * Criteria used for import function
-    *
-    * @see CommonDevice::getImportCriteria()
-    *
-    * @since 0.84
-   **/
    function getImportCriteria() {
 
       return ['designation'      => 'equal',
@@ -146,7 +129,7 @@ class DeviceMotherboard extends CommonDevice {
          'id'                 => '14',
          'table'              => 'glpi_devicemotherboards',
          'field'              => 'designation',
-         'name'               => __('System board'),
+         'name'               => static::getTypeName(1),
          'forcegroupby'       => true,
          'massiveaction'      => false,
          'datatype'           => 'string',

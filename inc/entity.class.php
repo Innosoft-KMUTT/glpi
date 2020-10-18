@@ -178,20 +178,12 @@ class Entity extends CommonTreeDropdown {
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDBTM::canViewItem()
-   **/
    function canViewItem() {
       // Check the current entity
       return Session::haveAccessToEntity($this->getField('id'));
    }
 
 
-   /**
-    * @see CommonDBTM::isNewID()
-   **/
    static function isNewID($ID) {
       return (($ID < 0) || !strlen($ID));
    }
@@ -280,6 +272,15 @@ class Entity extends CommonTreeDropdown {
 
       $input['max_closedate'] = $_SESSION["glpi_currenttime"];
 
+      if (empty($input['latitude']) && empty($input['longitude']) && empty($input['altitude']) &&
+         !empty($input[static::getForeignKeyField()])) {
+         $parent = new static();
+         $parent->getFromDB($input[static::getForeignKeyField()]);
+         $input['latitude'] = $parent->fields['latitude'];
+         $input['longitude'] = $parent->fields['longitude'];
+         $input['altitude'] = $parent->fields['altitude'];
+      }
+
       if (!Session::isCron()) { // Filter input for connected
          $input = $this->checkRightDatas($input);
       }
@@ -320,9 +321,6 @@ class Entity extends CommonTreeDropdown {
    }
 
 
-   /**
-    * @see CommonTreeDropdown::defineTabs()
-   **/
    function defineTabs($options = []) {
 
       $ong = [];
@@ -360,7 +358,7 @@ class Entity extends CommonTreeDropdown {
                   $ong[5] = __('Assistance');
                }
                $ong[6] = __('Assets');
-               if (Session::haveRight(Config::$rightname, [UPDATE])) {
+               if (Session::haveRight(Config::$rightname, UPDATE)) {
                   $ong[7] = __('UI customization');
                }
 
@@ -547,7 +545,7 @@ class Entity extends CommonTreeDropdown {
          'id'                 => '5',
          'table'              => $this->getTable(),
          'field'              => 'phonenumber',
-         'name'               => __('Phone'),
+         'name'               => Phone::getTypeName(1),
          'massiveaction'      => false,
          'datatype'           => 'string',
          'autocomplete'       => true,
@@ -1039,7 +1037,7 @@ class Entity extends CommonTreeDropdown {
          'id'                 => '36',
          'table'              => $this->getTable(),
          'field'              => 'calendars_id',// not a dropdown because of special valu
-         'name'               => __('Calendar'),
+         'name'               => _n('Calendar', 'Calendars', 1),
          'massiveaction'      => false,
          'nosearch'           => true,
          'datatype'           => 'specific'
@@ -1406,7 +1404,7 @@ class Entity extends CommonTreeDropdown {
       echo "<tr><th colspan='4'>".__('Address')."</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>". __('Phone')."</td>";
+      echo "<td>". Phone::getTypeName(1)."</td>";
       echo "<td>";
       Html::autocompletionTextField($entity, "phonenumber");
       echo "</td>";
@@ -2016,7 +2014,7 @@ class Entity extends CommonTreeDropdown {
 
       echo "<tr class='tab_bg_1'>";
       echo "<th colspan='2' rowspan='2'>";
-      echo _n('License', 'Licenses', Session::getPluralNumber());
+      echo SoftwareLicense::getTypeName(Session::getPluralNumber());
       echo "</th>";
       echo "<td>" . __('Alarms on expired licenses') . "</td><td>";
       $default_value = $entity->fields['use_licenses_alert'];
@@ -2186,7 +2184,7 @@ class Entity extends CommonTreeDropdown {
       global $CFG_GLPI;
 
       $ID = $entity->getField('id');
-      if (!$entity->can($ID, READ) || !Session::haveRight(Config::$rightname, [UPDATE])) {
+      if (!$entity->can($ID, READ) || !Session::haveRight(Config::$rightname, UPDATE)) {
          return false;
       }
 
@@ -2195,7 +2193,7 @@ class Entity extends CommonTreeDropdown {
       echo Html::script("public/lib/codemirror.js");
 
       // Notification right applied
-      $canedit = Session::haveRight(Config::$rightname, [UPDATE])
+      $canedit = Session::haveRight(Config::$rightname, UPDATE)
          && Session::haveAccessToEntity($ID);
 
       echo "<div class='spaced'>";
@@ -2503,7 +2501,7 @@ class Entity extends CommonTreeDropdown {
 
       echo "<tr><th colspan='4'>".__('Tickets configuration')."</th></tr>";
 
-      echo "<tr class='tab_bg_1'><td colspan='2'>".__('Calendar')."</td>";
+      echo "<tr class='tab_bg_1'><td colspan='2'>"._n('Calendar', 'Calendars', 1)."</td>";
       echo "<td colspan='2'>";
       $options = ['value'      => $entity->fields["calendars_id"],
                        'emptylabel' => __('24/7')];
@@ -3346,11 +3344,6 @@ class Entity extends CommonTreeDropdown {
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see commonDBTM::getRights()
-   **/
    function getRights($interface = 'central') {
 
       $values = parent::getRights();

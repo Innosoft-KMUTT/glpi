@@ -340,9 +340,6 @@ class IPNetwork extends CommonImplicitTreeDropdown {
    }
 
 
-   /**
-    * @see CommonImplicitTreeDropdown::prepareInputForAdd()
-   **/
    function prepareInputForAdd($input) {
 
       $preparedInput = $this->prepareInput($input);
@@ -360,9 +357,6 @@ class IPNetwork extends CommonImplicitTreeDropdown {
    }
 
 
-   /**
-    * @see CommonImplicitTreeDropdown::prepareInputForUpdate()
-   **/
    function prepareInputForUpdate($input) {
 
       $preparedInput = $this->prepareInput($input);
@@ -391,9 +385,6 @@ class IPNetwork extends CommonImplicitTreeDropdown {
    }
 
 
-   /**
-    * @see CommonImplicitTreeDropdown::post_updateItem()
-   **/
    function post_updateItem($history = 1) {
 
       if ($this->networkUpdate) {
@@ -971,13 +962,25 @@ class IPNetwork extends CommonImplicitTreeDropdown {
 
       foreach (self::searchNetworksContainingIP($item) as $networks_id) {
          if ($network->getFromDB($networks_id)) {
+            $address = $network->getAddress();
+            $netmask = $network->getNetmask();
+
+            // Stop if we failed to retrieve address or netmask
+            if (!$address || !$netmask) {
+               continue;
+            }
 
             if ($createRow) {
                $row = $row->createRow();
             }
+
             //TRANS: %1$s is address, %2$s is netmask
-            $content = sprintf(__('%1$s / %2$s'), $network->getAddress()->getTextual(),
-                               $network->getNetmask()->getTextual());
+            $content = sprintf(
+               __('%1$s / %2$s'),
+               $address->getTextual(),
+               $netmask->getTextual()
+            );
+
             if ($network->fields['addressable'] == 1) {
                $content = "<span class='b'>".$content."</span>";
             }

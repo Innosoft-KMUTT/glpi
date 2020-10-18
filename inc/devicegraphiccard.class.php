@@ -64,7 +64,7 @@ class DeviceGraphicCard extends CommonDevice {
                                                                                     null, false),
                                      'type'  => 'registeredIDChooser'],
                                ['name'  => 'devicegraphiccardmodels_id',
-                                     'label' => __('Model'),
+                                     'label' => _n('Model', 'Models', 1),
                                      'type'  => 'dropdownValue']]);
    }
 
@@ -102,7 +102,7 @@ class DeviceGraphicCard extends CommonDevice {
          'id'                 => '15',
          'table'              => 'glpi_devicegraphiccardmodels',
          'field'              => 'name',
-         'name'               => __('Model'),
+         'name'               => _n('Model', 'Models', 1),
          'datatype'           => 'dropdown'
       ];
 
@@ -127,29 +127,16 @@ class DeviceGraphicCard extends CommonDevice {
    }
 
 
-   /**
-    * @since 0.85
-    * @see CommonDropdown::prepareInputForAdd()
-   **/
    function prepareInputForAdd($input) {
       return $this->prepareInputForAddOrUpdate($input);
    }
 
 
-   /**
-    * @since 0.85
-    * @see CommonDropdown::prepareInputForUpdate()
-   **/
    function prepareInputForUpdate($input) {
       return $this->prepareInputForAddOrUpdate($input);
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDevice::getHTMLTableHeader()
-   **/
    static function getHTMLTableHeader($itemtype, HTMLTableBase $base,
                                       HTMLTableSuperHeader $super = null,
                                       HTMLTableHeader $father = null, array $options = []) {
@@ -170,11 +157,6 @@ class DeviceGraphicCard extends CommonDevice {
    }
 
 
-   /**
-    * @since 0.84
-    *
-    * @see CommonDevice::getHTMLTableCellForItem()
-   **/
    function getHTMLTableCellForItem(HTMLTableRow $row = null, CommonDBTM $item = null,
                                     HTMLTableCell $father = null, array $options = []) {
 
@@ -198,13 +180,6 @@ class DeviceGraphicCard extends CommonDevice {
    }
 
 
-   /**
-    * Criteria used for import function
-    *
-    * @see CommonDevice::getImportCriteria()
-    *
-    * @since 0.84
-   **/
    function getImportCriteria() {
 
       return ['designation'       => 'equal',
@@ -219,7 +194,7 @@ class DeviceGraphicCard extends CommonDevice {
          'id'                 => '13',
          'table'              => 'glpi_devicegraphiccards',
          'field'              => 'designation',
-         'name'               => __('Graphics card'),
+         'name'               => static::getTypeName(1),
          'forcegroupby'       => true,
          'massiveaction'      => false,
          'datatype'           => 'string',

@@ -180,6 +180,7 @@ class CronTask extends CommonDBTM{
    /**
     * Signal handler callback
     *
+    * @param integer $signo Signal number
     * @since 9.1
     */
    function signal($signo) {
@@ -396,12 +397,12 @@ class CronTask extends CommonDBTM{
          // Build query for frequency and allowed hour
          $WHERE[] = ['OR' => [
             ['AND' => [
-               ['hourmin'   => ['<', $DB->quoteName('hourmax')]],
+               ['hourmin'   => ['<', new QueryExpression($DB->quoteName('hourmax'))]],
                'hourmin'   => ['<=', $hour],
                'hourmax'   => ['>', $hour]
             ]],
             ['AND' => [
-               'hourmin'   => ['>', $DB->quoteName('hourmax')],
+               'hourmin'   => ['>', new QueryExpression($DB->quoteName('hourmax'))],
                'OR'        => [
                   'hourmin'   => ['<=', $hour],
                   'hourmax'   => ['>', $hour]
@@ -1127,7 +1128,7 @@ class CronTask extends CommonDBTM{
       if (count($iterator)) {
          echo "<table class='tab_cadrehov'>";
          $header = "<tr>";
-         $header .= "<th>".__('Date')."</th>";
+         $header .= "<th>"._n('Date', 'Dates', 1)."</th>";
          $header .= "<th>".__('Total duration')."</th>";
          $header .= "<th>"._x('quantity', 'Number')."</th>";
          $header .= "<th>".__('Description')."</th>";
@@ -1187,7 +1188,7 @@ class CronTask extends CommonDBTM{
 
       if (count($iterator)) {
          echo "<table class='tab_cadrehov'><tr>";
-         echo "<th>".__('Date')."</th>";
+         echo "<th>"._n('Date', 'Dates', 1)."</th>";
          echo "<th>".__('Status')."</th>";
          echo "<th>". __('Duration')."</th>";
          echo "<th>"._x('quantity', 'Number')."</th>";

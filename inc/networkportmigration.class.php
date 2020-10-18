@@ -92,11 +92,6 @@ class NetworkPortMigration extends CommonDBChild {
       parent::post_deleteItem();
    }
 
-   /**
-    * @see CommonGLPI::defineTabs()
-    *
-    * @since 0.85
-   **/
    function defineTabs($options = []) {
 
       $ong = [];
@@ -292,7 +287,7 @@ class NetworkPortMigration extends CommonDBChild {
       echo "<td>". __('Gateway') ."</td>\n";
       echo "<$gateway_cell>" . $this->fields['gateway'] . "</$gateway_cell></tr>\n";
 
-      echo "<tr class='tab_bg_1'><td>". __('Network interface') ."</td><$interface_cell>\n";
+      echo "<tr class='tab_bg_1'><td>". NetworkInterface::getTypeName(1) ."</td><$interface_cell>\n";
       $iterator = $DB->request([
          'SELECT' => 'name',
          'FROM'   => 'glpi_networkinterfaces',
@@ -312,9 +307,6 @@ class NetworkPortMigration extends CommonDBChild {
    }
 
 
-   /**
-    * @see CommonDBTM::getSpecificMassiveActions()
-   **/
    function getSpecificMassiveActions($checkitem = null) {
 
       $isadmin = static::canUpdate();
@@ -327,11 +319,6 @@ class NetworkPortMigration extends CommonDBChild {
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see CommonDBTM::showMassiveActionsSubForm()
-   **/
    static function showMassiveActionsSubForm(MassiveAction $ma) {
       switch ($ma->getAction()) {
          case 'transform_to' :
@@ -345,11 +332,6 @@ class NetworkPortMigration extends CommonDBChild {
    }
 
 
-   /**
-    * @since 0.85
-    *
-    * @see CommonDBTM::processMassiveActionsForOneItemtype()
-   **/
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids) {
       switch ($ma->getAction()) {
@@ -449,7 +431,7 @@ class NetworkPortMigration extends CommonDBChild {
          'table'              => 'glpi_networkinterfaces',
          'field'              => 'name',
          'datatype'           => 'dropdown',
-         'name'               => __('Network interface')
+         'name'               => NetworkInterface::getTypeName(1)
       ];
 
       return $tab;

@@ -110,7 +110,6 @@ commands:
           command: |
             bin/console glpi:database:configure --config-dir=./tests --no-interaction --reconfigure --db-name=glpitest --db-host=127.0.0.1 --db-user=root
             php vendor/bin/atoum -p 'php -d memory_limit=512M' --debug --force-terminal --use-dot-report --bootstrap-file tests/bootstrap.php --max-children-number 1 -d tests/database
-            php vendor/bin/ocular --repository=g/glpi-project/glpi code-coverage:upload --format=php-clover tests/code-coverage/clover.xml
 
   # Unit test suite command.
   run_unit_test_suite:
@@ -119,7 +118,6 @@ commands:
           name: Unit tests
           command: |
             php vendor/bin/atoum -p 'php -d memory_limit=512M' --debug --force-terminal --use-dot-report --bootstrap-file tests/bootstrap.php -d tests/units
-            php vendor/bin/ocular --repository=g/glpi-project/glpi code-coverage:upload --format=php-clover tests/code-coverage/clover.xml
 
   # Unit test suite command.
   run_imap_test_suite:
@@ -130,7 +128,6 @@ commands:
             sudo service dovecot start
             for f in `ls tests/emails-tests/*.eml`; do getmail_maildir ~/Maildir/ < $f; done
             php vendor/bin/atoum -p 'php -d memory_limit=512M' --debug --force-terminal --use-dot-report --bootstrap-file tests/bootstrap.php --max-children-number 1 -d tests/imap
-            php vendor/bin/ocular --repository=g/glpi-project/glpi code-coverage:upload --format=php-clover tests/code-coverage/clover.xml
 
   # Functionnal test suite command.
   run_functionnal_test_suite:
@@ -139,7 +136,6 @@ commands:
           name: Functionnal tests
           command: |
             php vendor/bin/atoum -p 'php -d memory_limit=512M' --debug --force-terminal --use-dot-report --bootstrap-file tests/bootstrap.php --max-children-number 1 -d tests/functionnal
-            php vendor/bin/ocular --repository=g/glpi-project/glpi code-coverage:upload --format=php-clover tests/code-coverage/clover.xml
 
   # Web test suite command.
   run_web_test_suite:
@@ -149,7 +145,6 @@ commands:
           command: |
             php -S localhost:8088 tests/router.php &>/dev/null &
             php vendor/bin/atoum -p 'php -d memory_limit=512M' --debug --force-terminal --use-dot-report --bootstrap-file tests/bootstrap.php --max-children-number 1 -d tests/web
-            php vendor/bin/ocular --repository=g/glpi-project/glpi code-coverage:upload --format=php-clover tests/code-coverage/clover.xml
 
   # CSS test suite command.
   run_css_test_suite:
@@ -193,6 +188,13 @@ jobs:
     steps:
       - build
       - run:
+            name: "Check for missing dependencies / bad symbols"
+            # Alpine linux (used in GithubActions) does not implement GLOB_BRACE.
+            # We have to define it to 0 to prevent "Warning: Use of undefined constant GLOB_BRACE - assumed 'GLOB_BRACE'" error.
+            # This is not a problem as long as we do not use braces in "scan-files" section of the config file.
+            command: |
+              php -d memory_limit=1G -r 'define("GLOB_BRACE", 0); include "./vendor/maglnet/composer-require-checker/bin/composer-require-checker.php";' check --config-file=.composer-require-checker.config.json
+      - run:
           name: PHP CS
           command: |
             touch /home/circleci/phpcs.cache
@@ -201,6 +203,10 @@ jobs:
           name: ESLint
           command: |
             node_modules/.bin/eslint . && echo "ESLint found no errors"
+      - run:
+          name: gettext
+          command: |
+            ! tools/locale/extract_template.sh 2>&1 | grep 'warning'
 
   # PHP 7.2 test suite.
   php_7_2_test_suite:
@@ -316,9 +322,18 @@ workflows:
       - php_7_4_test_suite:
           requires:
             - checkout
+          filters:
+            branches:
+              ignore: 9.4/bugfixes
       - php_7_4_mysql_5_6_test_suite:
           requires:
             - checkout
+          filters:
+            branches:
+              ignore: 9.4/bugfixes
       - php_7_4_mysql_8_0_test_suite:
           requires:
             - checkout
+          filters:
+            branches:
+              ignore: 9.4/bugfixes

@@ -31,7 +31,7 @@
 */
 
 // Current version of GLPI
-define('GLPI_VERSION', '9.5.1');
+define('GLPI_VERSION', '9.5.2');
 if (substr(GLPI_VERSION, -4) === '-dev') {
    //for dev version
    define('GLPI_PREVER', str_replace('-dev', '', GLPI_VERSION));
@@ -95,6 +95,7 @@ $CFG_GLPI['languages'] = [
    'kn'     => ['ಕನ್ನಡ',                      'kn.mo',       'en-GB', 'en', 'kannada',              2],
    'lv_LV'  => ['Latviešu',                  'lv_LV.mo',    'lv',    'lv', 'latvian',              2],
    'lt_LT'  => ['Lietuvių',                  'lt_LT.mo',    'lt',    'lt', 'lithuanian',           2],
+   'mn_MN'  => ['Монгол хэл',                'mn_MN.mo',    'mn',    'mn', 'mongolian',            2],
    'nl_NL'  => ['Nederlands',                'nl_NL.mo',    'nl',    'nl', 'dutch',                2],
    'nl_BE'  => ['Flemish',                   'nl_BE.mo',    'nl',    'nl', 'flemish',              2],
    'nb_NO'  => ['Norsk (Bokmål)',            'nb_NO.mo',    'no',    'nb', 'norwegian',            2], // no_NB
@@ -183,7 +184,8 @@ $CFG_GLPI["unicity_types"]                = ['Budget', 'Computer', 'Contact', 'C
 $CFG_GLPI["state_types"]                  = ['Computer', 'Monitor', 'NetworkEquipment',
                                                   'Peripheral', 'Phone', 'Printer', 'SoftwareLicense',
                                                   'Certificate', 'Enclosure', 'PDU', 'Line',
-                                                   'Rack', 'SoftwareVersion', 'Cluster', 'Contract'];
+                                                  'Rack', 'SoftwareVersion', 'Cluster', 'Contract',
+                                                  'Appliance'];
 
 $CFG_GLPI["asset_types"]                  = ['Computer', 'Monitor', 'NetworkEquipment',
                                                   'Peripheral', 'Phone', 'Printer', 'SoftwareLicense',
@@ -272,7 +274,7 @@ $CFG_GLPI["dictionnary_types"]            = ['ComputerModel', 'ComputerType', 'M
                                                   'OperatingSystemKernel', 'OperatingSystemKernelVersion',
                                                   'OperatingSystemEdition'];
 
-$CFG_GLPI["helpdesk_visible_types"]       = ['Software'];
+$CFG_GLPI["helpdesk_visible_types"]       = ['Software', 'Appliance'];
 
 $CFG_GLPI["networkport_types"]            = ['Computer', 'Monitor', 'NetworkEquipment', 'Peripheral',
                                                   'Phone', 'Printer', 'Enclosure', 'PDU', 'Cluster'];
@@ -407,7 +409,8 @@ $CFG_GLPI['user_pref_field'] = ['backcreated', 'csv_delimiter', 'date_format',
                                      'set_default_requester', 'show_count_on_tabs',
                                      'show_jobs_at_login', 'task_private', 'task_state',
                                      'use_flat_dropdowntree', 'layout', 'palette',
-                                     'highcontrast_css'];
+                                     'highcontrast_css', 'default_dashboard_central', 'default_dashboard_assets',
+                                     'default_dashboard_helpdesk', 'default_dashboard_mini_ticket'];
 
 $CFG_GLPI['layout_excluded_pages'] = ["profile.form.php",
                                            "knowbaseitem.php",
@@ -462,9 +465,11 @@ $CFG_GLPI['domain_types']        = ['Computer', 'Monitor', 'NetworkEquipment', '
 $CFG_GLPI['appliance_types']     = ['Computer', 'Monitor', 'NetworkEquipment', 'Peripheral', 'Phone',
                                        'Printer', 'Software', 'Cluster'];
 
+$CFG_GLPI['appliance_relation_types'] = ['Location', 'Network', 'Domain'];
+
 $dashboard_libs = [
    'dashboard', 'gridstack',
-   'charts', 'clipboard'
+   'charts', 'clipboard', 'sortable'
 ];
 
 $reservations_libs = ['fullcalendar', 'reservations'];
@@ -559,23 +564,23 @@ $CFG_GLPI["default_impact_asset_types"] = [
  * added in GLPI configuration
  */
 $CFG_GLPI["impact_asset_types"] = $CFG_GLPI["default_impact_asset_types"] + [
-   Authldap::getType()           => "pics/impact/authldap.png",
+   AuthLDAP::getType()           => "pics/impact/authldap.png",
    CartridgeItem::getType()      => "pics/impact/cartridgeitem.png",
    Contract::getType()           => "pics/impact/contract.png",
-   Crontask::getType()           => "pics/impact/crontask.png",
+   CronTask::getType()           => "pics/impact/crontask.png",
    DeviceSimcard::getType()      => "pics/impact/devicesimcard.png",
    Entity::getType()             => "pics/impact/entity.png",
    Group::getType()              => "pics/impact/group.png",
    ITILCategory::getType()       => "pics/impact/itilcategory.png",
    Line::getType()               => "pics/impact/line.png",
    Location::getType()           => "pics/impact/location.png",
-   Mailcollector::getType()      => "pics/impact/mailcollector.png",
+   MailCollector::getType()      => "pics/impact/mailcollector.png",
    Notification::getType()       => "pics/impact/notification.png",
    Profile::getType()            => "pics/impact/profile.png",
    Project::getType()            => "pics/impact/project.png",
    Rack::getType()               => "pics/impact/rack.png",
    SLM::getType()                => "pics/impact/slm.png",
-   Softwarelicense::getType()    => "pics/impact/softwarelicense.png",
+   SoftwareLicense::getType()    => "pics/impact/softwarelicense.png",
    Supplier::getType()           => "pics/impact/supplier.png",
    User::getType()               => "pics/impact/user.png",
 ];

@@ -41,4 +41,8 @@ class Network extends CommonDropdown {
    static function getTypeName($nb = 0) {
       return _n('Network', 'Networks', $nb);
    }
+
+   static function getiCon() {
+      return "fas fa-network-wired";
+   }
 }

@@ -182,7 +182,7 @@ class State extends CommonTreeDropdown {
          }
          echo "<td class='numeric b'>$tot</td></tr>";
 
-         while ($data = $iterator>next()) {
+         while ($data = $iterator->next()) {
             $tot = 0;
             echo "<tr class='tab_bg_2'><td class='b'>";
 
@@ -419,6 +419,15 @@ class State extends CommonTreeDropdown {
          'field'              => 'is_visible_contract',
          'name'               => sprintf(__('%1$s - %2$s'), __('Visibility'),
                                     Contract::getTypeName(Session::getPluralNumber())),
+         'datatype'           => 'bool'
+      ];
+
+      $tab[] = [
+         'id'                 => '37',
+         'table'              => $this->getTable(),
+         'field'              => 'is_visible_appliance',
+         'name'               => sprintf(__('%1$s - %2$s'), __('Visibility'),
+                                    Appliance::getTypeName(Session::getPluralNumber())),
          'datatype'           => 'bool'
       ];
 

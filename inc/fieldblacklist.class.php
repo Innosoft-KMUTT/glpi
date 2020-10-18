@@ -65,7 +65,7 @@ class Fieldblacklist extends CommonDropdown {
    function getAdditionalFields() {
 
       return [['name'  => 'itemtype',
-                         'label' => __('Type'),
+                         'label' => _n('Type', 'Types', 1),
                          'type'  => 'blacklist_itemtype'],
                    ['name'  => 'field',
                          'label' => _n('Field', 'Fields', 1),
@@ -88,7 +88,7 @@ class Fieldblacklist extends CommonDropdown {
          'id'                 => '4',
          'table'              => $this->getTable(),
          'field'              => 'itemtype',
-         'name'               => __('Type'),
+         'name'               => _n('Type', 'Types', 1),
          'massiveaction'      => false,
          'datatype'           => 'itemtypename',
          'forcegroupby'       => true
@@ -98,7 +98,7 @@ class Fieldblacklist extends CommonDropdown {
          'id'                 => '6',
          'table'              => $this->getTable(),
          'field'              => 'field',
-         'name'               => __('Field'),
+         'name'               => _n('Field', 'Fields', 1),
          'massiveaction'      => false,
          'datatype'           => 'specific',
          'additionalfields'   => [
@@ -191,9 +191,6 @@ class Fieldblacklist extends CommonDropdown {
    }
 
 
-   /**
-    * @see CommonDBTM::prepareInputForAdd()
-   **/
    function prepareInputForAdd($input) {
 
       $input = parent::prepareInputForAdd($input);
@@ -201,9 +198,6 @@ class Fieldblacklist extends CommonDropdown {
    }
 
 
-   /**
-    * @see CommonDBTM::prepareInputForUpdate()
-   **/
    function prepareInputForUpdate($input) {
 
       $input = parent::prepareInputForUpdate($input);
@@ -214,8 +208,8 @@ class Fieldblacklist extends CommonDropdown {
    /**
     * Display specific fields for FieldUnicity
     *
-    * @param $ID
-    * @param $field array
+    * @param integer $ID     Unused
+    * @param array   $field  Array of fields
    **/
    function displaySpecificTypeField($ID, $field = []) {
 
